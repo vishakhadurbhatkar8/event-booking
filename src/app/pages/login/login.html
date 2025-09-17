@@ -1,0 +1,17 @@
+<div class="login-box">
+  <h1>Login</h1>
+
+  @if (!otpSent) {
+    <form (ngSubmit)="requestOtp()">
+      <label>Email:</label>
+      <input [(ngModel)]="email" name="email" required placeholder="Enter your email" />
+      <button type="submit" [disabled]="loading">Request OTP</button>
+    </form>
+  } @else {
+    <form (ngSubmit)="verifyOtp()">
+      <label>OTP:</label>
+      <input [(ngModel)]="otp" name="otp" required placeholder="Enter OTP" />
+      <button type="submit" [disabled]="loading">Verify OTP</button>
+    </form>
+  }
+</div>

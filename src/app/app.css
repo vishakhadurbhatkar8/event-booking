@@ -1,0 +1,30 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.app-header, .app-footer {
+  background: #1976d2;
+  color: white;
+  padding: 1rem;
+}
+
+.app-header nav a {
+  color: white;
+  margin-right: 1rem;
+  text-decoration: none;
+}
+
+.app-header nav a.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.app-main {
+  padding: 2rem;
+  min-height: 70vh;
+}
+
+.page {
+  padding: 1rem;
+}

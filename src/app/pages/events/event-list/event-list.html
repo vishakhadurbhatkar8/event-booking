@@ -1,0 +1,29 @@
+<div class="event-list-page">
+  <h1>Events</h1>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input [(ngModel)]="search" placeholder="Search events..." />
+    <input [(ngModel)]="location" placeholder="Filter by location..." />
+    <button (click)="applyFilters()">Apply</button>
+  </div>
+
+  <!-- Event List -->
+  @if (loading) {
+    <p>Loading events...</p>
+  } @else {
+    <ul>
+      @for (event of events; track event.id) {
+        <li class="event-card">
+          <h3>{{ event.title }}</h3>
+          <p>{{ event.description }}</p>
+          <p><strong>Date:</strong> {{ event.date }}</p>
+          <p><strong>Location:</strong> {{ event.location }}</p>
+          <a [routerLink]="['/events', event.id]">View Details</a>
+        </li>
+      } @empty {
+        <p>No events found.</p>
+      }
+    </ul>
+  }
+</div>

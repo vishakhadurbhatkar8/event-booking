@@ -1,0 +1,38 @@
+<div class="booking-dashboard-page">
+  <h1>My Bookings</h1>
+
+  @if (loading) {
+    <p>Loading bookings...</p>
+  } @else {
+    <section>
+      <h2>Upcoming</h2>
+      @for (b of upcoming; track b.id) {
+        <div class="booking-card">
+          <h3>{{ b.event?.title }}</h3>
+          <p><strong>Date:</strong> {{ b.event?.date }}</p>
+          <p><strong>Status:</strong> {{ b.status }}</p>
+
+          @if (b.status === 'reserved') {
+            <button (click)="uploadIdProof(b)">Upload ID Proof</button>
+            <button (click)="cancelBooking(b)">Cancel</button>
+          }
+        </div>
+      } @empty {
+        <p>No upcoming bookings.</p>
+      }
+    </section>
+
+    <section>
+      <h2>Past</h2>
+      @for (b of past; track b.id) {
+        <div class="booking-card past">
+          <h3>{{ b.event?.title }}</h3>
+          <p><strong>Date:</strong> {{ b.event?.date }}</p>
+          <p><strong>Status:</strong> {{ b.status }}</p>
+        </div>
+      } @empty {
+        <p>No past bookings.</p>
+      }
+    </section>
+  }
+</div>

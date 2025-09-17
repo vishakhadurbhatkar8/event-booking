@@ -1,0 +1,23 @@
+<div class="event-details-page" *ngIf="event">
+  <h1>{{ event.title }}</h1>
+  <p>{{ event.description }}</p>
+  <p><strong>Date:</strong> {{ event.date }}</p>
+  <p><strong>Location:</strong> {{ event.location }}</p>
+
+  @if (!booking) {
+    <button (click)="reserveSeat()">Reserve Seat</button>
+  } @else {
+    @if (booking.status === 'reserved' && countdown > 0) {
+      <p>Reservation expires in: {{ countdown }}s</p>
+      <button (click)="confirmBooking()">Confirm Booking</button>
+    } @else if (booking.status === 'confirmed') {
+      <p class="confirmed">✅ Booking Confirmed!</p>
+    } @else {
+      <p class="expired">❌ Reservation expired</p>
+    }
+  }
+</div>
+
+@if (!event) {
+  <p>Loading event...</p>
+}

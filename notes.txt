@@ -1,0 +1,18 @@
+6. Quick Test
+
+Run ng serve
+
+Navigate to /events → event list placeholder
+
+Open DevTools → check localStorage (empty)
+
+Try /bookings → should redirect to blank (guard blocks navigation, Angular will not allow route if false)
+
+Set a fake token in DevTools:
+
+localStorage.setItem('token', 'test');
+
+
+Refresh /bookings → now loads the Booking Dashboard page.
+
+✅ Core infrastructure is ready.
