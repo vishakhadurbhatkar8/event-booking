@@ -11,7 +11,7 @@ import { EventService,Event } from '../../../core/services/event';
   styleUrl: './booking-dashboard.css'
 })
 export class BookingDashboard implements OnInit {
-  bookings: (Booking & { event?: Event })[] = [];
+  bookings: (Booking & { event?: Event, selectedFile?: File })[] = [];
   upcoming: (Booking & { event?: Event })[] = [];
   past: (Booking & { event?: Event })[] = [];
   loading = false;
@@ -31,7 +31,6 @@ export class BookingDashboard implements OnInit {
       next: (data) => {
         this.bookings = data;
 
-        // attach mock event details
         this.eventService.getMockEvents().subscribe(evts => {
           this.bookings.forEach(b => {
             b.event = evts.find(e => e.id === b.eventId);
@@ -53,8 +52,25 @@ export class BookingDashboard implements OnInit {
     });
   }
 
-  uploadIdProof(booking: Booking) {
-    alert(`Upload ID proof for booking ${booking.id} (TODO: integrate upload service)`);
+  onFileSelected(event: any, booking: Booking & { selectedFile?: File }) {
+    const file = event.target.files[0];
+    if (file) {
+      booking.selectedFile = file;
+    }
+  }
+
+  uploadIdProof(booking: Booking & { selectedFile?: File }) {
+    if (!booking.selectedFile) {
+      alert('No file selected');
+      return;
+    }
+    const fd = new FormData();
+    fd.append('file', booking.selectedFile);
+
+    this.bookingService.uploadIdProof(booking.id, fd).subscribe({
+      next: () => alert('ID proof uploaded successfully'),
+      error: () => alert('Failed to upload ID proof')
+    });
   }
 
   cancelBooking(booking: Booking) {

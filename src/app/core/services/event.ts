@@ -25,11 +25,27 @@ export class EventService {
     return this.http.get<Event>(`${this.api}/events/${id}`);
   }
 
+  uploadBanner(eventId: string, fd: FormData): Observable<any> {
+    return this.http.post<any>(`${this.api}/events/${eventId}/upload-banner`, fd);
+  }
+
   // Mock fallback (remove later)
   getMockEvents(): Observable<Event[]> {
     return of([
-      { id: '1', title: 'Angular Conference', description: 'Deep dive into Angular 17', date: '2025-09-30', location: 'Goa' },
-      { id: '2', title: 'React Meetup', description: 'React 19 updates', date: '2025-10-05', location: 'Pune' }
+      {
+        id: '1',
+        title: 'Angular Conference',
+        description: 'Deep dive into Angular 17',
+        date: '2025-09-30',
+        location: 'Goa'
+      },
+      {
+        id: '2',
+        title: 'React Meetup',
+        description: 'React 19 updates',
+        date: '2025-10-05',
+        location: 'Pune'
+      }
     ]);
   }
 }

@@ -26,6 +26,10 @@ export class BookingService {
   getUserBookings(): Observable<Booking[]> {
     return this.http.get<Booking[]>(`${this.api}/bookings/me`);
   }
+  uploadIdProof(bookingId: string, formData: FormData) {
+  return this.http.post(`${this.api}/bookings/${bookingId}/upload-id`, formData);
+}
+
 
   // Mock fallback
   getMockBookings(): Observable<Booking[]> {

@@ -3,7 +3,11 @@
   <nav>
     <a routerLink="/events" routerLinkActive="active">Events</a>
     <a routerLink="/bookings" routerLinkActive="active">My Bookings</a>
-    <a routerLink="/admin/events" routerLinkActive="active">Admin</a>
+
+    @if (role === 'admin' || role === 'superadmin') {
+      <a routerLink="/admin/events" routerLinkActive="active">Admin</a>
+    }
+
     <a routerLink="/login" routerLinkActive="active">Login</a>
   </nav>
 </header>

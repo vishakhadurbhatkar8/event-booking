@@ -1,4 +1,17 @@
-<div class="page admin-events-page">
-  <h1>Admin - Manage Events</h1>
-  <p>Here admin can create, edit, or delete events.</p>
+<div class="admin-events-page">
+  <h1>Admin – Manage Events</h1>
+  <p>List of events (TODO: connect to backend).</p>
+
+  <button>Add New Event</button>
+
+  <ul>
+    <li>Angular Conference <button>Edit</button> <button>Delete</button></li>
+    <li>React Meetup <button>Edit</button> <button>Delete</button></li>
+  </ul>
+
+  <div class="upload-banner">
+    <label>Upload Banner:</label>
+    <input type="file" (change)="onBannerSelected($event)" />
+    <button (click)="uploadBanner()" [disabled]="!selectedBanner">Upload</button>
+  </div>
 </div>

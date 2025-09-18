@@ -13,7 +13,8 @@
           <p><strong>Status:</strong> {{ b.status }}</p>
 
           @if (b.status === 'reserved') {
-            <button (click)="uploadIdProof(b)">Upload ID Proof</button>
+            <input type="file" (change)="onFileSelected($event, b)" />
+            <button (click)="uploadIdProof(b)" >Upload ID Proof</button>
             <button (click)="cancelBooking(b)">Cancel</button>
           }
         </div>
