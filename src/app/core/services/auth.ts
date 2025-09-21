@@ -9,6 +9,23 @@ export class AuthService {
   role = signal<string | null>(localStorage.getItem('role'));
 
   constructor(private http: HttpClient) {}
+  getRole(): string | null {
+    return localStorage.getItem('role');
+  }
+
+  isSuperAdmin(): boolean {
+    return this.getRole() === 'superadmin';
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+  logout(): void {
+    localStorage.clear();
+    window.location.href = '/login';
+  }
+
 
   requestOtp(email: string) {
     return this.http.post<{ devOtp?: string }>(`${this.api}/auth/request-otp`, { email });
@@ -28,16 +45,16 @@ export class AuthService {
     );
   }
 
-  logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    this.token.set(null);
-    this.role.set(null);
-  }
+  // logout() {
+  //   localStorage.removeItem('token');
+  //   localStorage.removeItem('role');
+  //   this.token.set(null);
+  //   this.role.set(null);
+  // }
 
-  isLoggedIn() {
-    return !!localStorage.getItem('token');
-  }
+  // isLoggedIn() {
+  //   return !!localStorage.getItem('token');
+  // }
 
   isAdmin() {
     return this.role() === 'admin' || this.role() === 'superadmin';

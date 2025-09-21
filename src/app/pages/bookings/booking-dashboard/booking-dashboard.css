@@ -41,3 +41,39 @@
     }
   }
 }
+
+
+.status-message {
+  margin-top: 1rem;
+  font-weight: bold;
+  color: green;
+}
+
+.booking-dashboard {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+
+.badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+
+.status-message {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+.booking-card {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.badge.reserved { background: #007bff; color: #fff; }
+.badge.cancelled { background: #dc3545; color: #fff; }

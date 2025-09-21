@@ -1,17 +1,58 @@
-<div class="admin-events-page">
-  <h1>Admin – Manage Events</h1>
-  <p>List of events (TODO: connect to backend).</p>
+<div class="admin-event-container">
+  <h2>Admin Panel – Manage Events</h2>
 
-  <button>Add New Event</button>
+  <!-- Add Event Form -->
+  <form [formGroup]="eventForm" (ngSubmit)="addEvent()" class="add-event-form">
+    <input formControlName="title" placeholder="Event Title" />
+    <textarea formControlName="description" placeholder="Description"></textarea>
+    <input type="date" formControlName="date" />
+    <input formControlName="location" placeholder="Location" />
+    <button type="submit" [disabled]="eventForm.invalid">Add Event</button>
+  </form>
 
-  <ul>
-    <li>Angular Conference <button>Edit</button> <button>Delete</button></li>
-    <li>React Meetup <button>Edit</button> <button>Delete</button></li>
-  </ul>
+  <hr />
 
-  <div class="upload-banner">
-    <label>Upload Banner:</label>
-    <input type="file" (change)="onBannerSelected($event)" />
-    <button (click)="uploadBanner()" [disabled]="!selectedBanner">Upload</button>
+  <!-- Event List -->
+  <div class="event-list">
+    @if (loading) {
+      <p>Loading events...</p>
+    } @else if (message) {
+      <p class="error">{{ message }}</p>
+    } @else if (events.length === 0) {
+      <p>No events found. Create your first event above!</p>
+    } @else {
+      @for (event of events; track event._id) {
+      <div class="event-card">
+        <h3>{{ event.title }}</h3>
+        <p>{{ event.description }}</p>
+        <p><strong>Date:</strong> {{ event.date | date }}</p>
+        <p><strong>Location:</strong> {{ event.location }}</p>
+        <p><strong>Status:</strong> {{ event.approved ? 'Approved' : 'Pending' }}</p>
+
+        <div class="event-actions">
+          @if (!event.approved) {
+            <button class="approve" (click)="approveEvent(event._id)">Approve</button>
+          }
+          <button class="delete" (click)="deleteEvent(event._id)">Delete</button>
+        </div>
+
+        <div class="event-banner-upload">
+          <label>Upload Banner:</label>
+          <input type="file" (change)="onBannerSelected($event, event._id)" />
+        </div>
+      </div>
+      }
+    }
   </div>
 </div>
+
+
+
+
+<!-- <div class="event-banner-upload">
+  <label>Upload Banner:</label>
+  <input type="file" (change)="onBannerSelected($event, event._id)" />
+  @if (event.banner) {
+    <p>Current banner: {{ event.banner }}</p>
+  }
+</div> -->

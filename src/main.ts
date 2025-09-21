@@ -7,10 +7,6 @@ import { App } from './app/app';
 import { routes } from './app/app.routes';
 import { jwtInterceptor } from './app/core/interceptors/jwt-interceptor';
 
-// (optional) production mode toggle
-// if (import.meta.env && import.meta.env.PROD) {
-//   enableProdMode();
-// }
 
 bootstrapApplication(App, {
   providers: [

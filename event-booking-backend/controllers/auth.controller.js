@@ -1,43 +1,51 @@
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import { User } from '../models/user.model.js';
+import User from "../models/user.model.js";
+import generateToken from "../utils/generateToken.js";
 
-dotenv.config();
-
-const OTP_STORE = {}; // { email: { code, expiresAt } }
-
-export const requestOtp = (req, res) => {
+// Step 1: Request OTP (for now just generate & return it)
+export const requestOtp = async (req, res) => {
   const { email } = req.body;
-  if (!email) return res.status(400).json({ message: 'Email required' });
-
-  const code = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit
-  OTP_STORE[email] = {
-    code,
-    expiresAt: Date.now() + process.env.OTP_EXPIRY * 1000
-  };
-
-  console.log(`OTP for ${email}: ${code}`);
-  res.json({ message: 'OTP sent (mock)', devOtp: code });
-};
-
-export const verifyOtp = async (req, res) => {
-  const { email, code } = req.body;
-  if (!email || !code) return res.status(400).json({ message: 'Email & code required' });
-
-  const record = OTP_STORE[email];
-  if (!record) return res.status(400).json({ message: 'No OTP requested' });
-  if (Date.now() > record.expiresAt) return res.status(400).json({ message: 'OTP expired' });
-  if (record.code !== code) return res.status(400).json({ message: 'Invalid OTP' });
-
   let user = await User.findOne({ email });
+
   if (!user) {
-    const role = email.includes('superadmin') ? 'superadmin' : (email.includes('admin') ? 'admin' : 'user');
-    user = new User({ email, role });
-    await user.save();
+    user = await User.create({ email, role: email === "superadmin@gmail.com" ? "superadmin" : "user" });
   }
 
-  const token = jwt.sign({ email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  user.otp = otp;
+  await user.save();
 
-  delete OTP_STORE[email];
-  res.json({ token, role: user.role });
+  // TODO: Send via email (here we return for testing)
+  res.json({ message: "OTP generated", otp });
+  console.log(otp)
+};
+
+// Step 2: Verify OTP and login
+export const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user || user.otp !== otp) {
+    return res.status(400).json({ message: "Invalid OTP" });
+  }
+
+  user.otp = null; // reset otp
+  await user.save();
+
+  res.json({
+    _id: user._id,
+    email: user.email,
+    role: user.role,
+    token: generateToken(user._id),
+  });
+};
+
+// Upload ID Proof
+export const uploadIdProof = async (req, res) => {
+  if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+
+  const user = await User.findById(req.user.id);
+  user.idProof = req.file.path;
+  await user.save();
+
+  res.json({ message: "ID Proof uploaded successfully", path: user.idProof });
 };

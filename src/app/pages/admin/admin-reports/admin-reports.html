@@ -1,0 +1,90 @@
+<div class="reports-dashboard">
+  <h2>Analytics Dashboard</h2>
+  
+  @if (loading) {
+    <p>Loading analytics...</p>
+  } @else if (error) {
+    <div class="error-message">
+      <p>{{ error }}</p>
+      <button (click)="loadAnalytics()">Retry</button>
+    </div>
+  } @else {
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="summary-card">
+        <h3>Total Bookings</h3>
+        <div class="number">{{ summary.totalBookings || 0 }}</div>
+      </div>
+      
+      <div class="summary-card">
+        <h3>Approved Bookings</h3>
+        <div class="number approved">{{ summary.approvedBookings || 0 }}</div>
+      </div>
+      
+      <div class="summary-card">
+        <h3>Pending Bookings</h3>
+        <div class="number pending">{{ summary.pendingBookings || 0 }}</div>
+      </div>
+      
+      <div class="summary-card">
+        <h3>Rejected Bookings</h3>
+        <div class="number rejected">{{ summary.rejectedBookings || 0 }}</div>
+      </div>
+      
+      <div class="summary-card">
+        <h3>Cancelled Bookings</h3>
+        <div class="number cancelled">{{ summary.cancelledBookings || 0 }}</div>
+      </div>
+      
+      <div class="summary-card">
+        <h3>Total Events</h3>
+        <div class="number">{{ summary.totalEvents || 0 }}</div>
+      </div>
+      
+      <div class="summary-card">
+        <h3>Approved Events</h3>
+        <div class="number approved">{{ summary.approvedEvents || 0 }}</div>
+      </div>
+      
+      <div class="summary-card">
+        <h3>Pending Events</h3>
+        <div class="number pending">{{ summary.pendingEvents || 0 }}</div>
+      </div>
+      
+      <div class="summary-card">
+        <h3>Recent Bookings (7 days)</h3>
+        <div class="number recent">{{ summary.recentBookings || 0 }}</div>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+      <div class="chart-container">
+        <h3>Bookings per Event</h3>
+        <canvas baseChart
+          [data]="eventChartData"
+          [options]="eventChartOptions"
+          type="bar">
+        </canvas>
+      </div>
+      
+      <div class="chart-container">
+        <h3>Bookings by Status</h3>
+        <canvas baseChart
+          [data]="bookingChartData"
+          [options]="bookingChartOptions"
+          type="pie">
+        </canvas>
+      </div>
+      
+      <div class="chart-container">
+        <h3>Events by Approval Status</h3>
+        <canvas baseChart
+          [data]="eventsChartData"
+          [options]="eventsChartOptions"
+          type="doughnut">
+        </canvas>
+      </div>
+    </div>
+  }
+</div>

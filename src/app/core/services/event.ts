@@ -3,11 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 
 export interface Event {
-  id: string;
+  _id: string;
+  id?: string; // For backward compatibility
   title: string;
   description: string;
   date: string;
   location: string;
+  approved?: boolean;
+  createdBy?: any;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -18,7 +21,7 @@ export class EventService {
 
   // Real API
   getEvents(): Observable<Event[]> {
-    return this.http.get<Event[]>(`${this.api}/events`);
+    return this.http.get<Event[]>(`${this.api}/events?status=approved`);
   }
 
   getEventById(id: string): Observable<Event> {
@@ -33,18 +36,22 @@ export class EventService {
   getMockEvents(): Observable<Event[]> {
     return of([
       {
-        id: '1',
+        _id: '1',
+        id: '1', // For backward compatibility
         title: 'Angular Conference',
         description: 'Deep dive into Angular 17',
         date: '2025-09-30',
-        location: 'Goa'
+        location: 'Goa',
+        approved: true
       },
       {
-        id: '2',
+        _id: '2',
+        id: '2', // For backward compatibility
         title: 'React Meetup',
         description: 'React 19 updates',
         date: '2025-10-05',
-        location: 'Pune'
+        location: 'Pune',
+        approved: true
       }
     ]);
   }

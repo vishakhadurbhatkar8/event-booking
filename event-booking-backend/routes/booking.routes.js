@@ -1,20 +1,20 @@
-import express from 'express';
-import {
-  listUserBookings,
-  reserveSeat,
-  confirmBooking,
-  cancelBookingCtrl,
-  uploadIdProof,
-  upload
-} from '../controllers/booking.controller.js';
-import { verifyToken } from '../middleware/auth.middleware.js';
+import express from "express";
+import multer from "multer";
+import { reserveSeat, cancelBooking, getMyBookings, confirmBooking, getAllBookings, uploadIdProof, approveBooking, rejectBooking } from "../controllers/booking.controller.js";
+import { getBookingAnalytics } from "../controllers/analytics.controller.js";
+import { authMiddleware } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
+const upload = multer({ dest: "uploads/idproofs/" });
 
-router.get('/', verifyToken, listUserBookings);
-router.post('/reserve', verifyToken, reserveSeat);
-router.post('/:id/confirm', verifyToken, confirmBooking);
-router.post('/:id/cancel', verifyToken, cancelBookingCtrl);
-router.post('/:id/upload-id', verifyToken, upload.single('file'), uploadIdProof);
+router.post("/", authMiddleware, reserveSeat);
+router.get("/me", authMiddleware, getMyBookings);
+router.get("/all", authMiddleware, getAllBookings);
+router.get("/analytics", authMiddleware, getBookingAnalytics);
+router.put("/:id/cancel", authMiddleware, cancelBooking);
+router.put("/:id/confirm", authMiddleware, confirmBooking);
+router.post("/:id/upload-idproof", authMiddleware, upload.single("idProof"), uploadIdProof);
+router.put("/:id/approve", authMiddleware, approveBooking);
+router.put("/:id/reject", authMiddleware, rejectBooking);
 
 export default router;

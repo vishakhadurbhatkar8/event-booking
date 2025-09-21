@@ -1,13 +1,14 @@
-<header class="app-header">
-  <h2>Event Booking System</h2>
-  <nav>
-    <a routerLink="/events" routerLinkActive="active">Events</a>
-    <a routerLink="/bookings" routerLinkActive="active">My Bookings</a>
+<header class="navbar">
+  <a routerLink="/">Home</a>
 
-    @if (role === 'admin' || role === 'superadmin') {
-      <a routerLink="/admin/events" routerLinkActive="active">Admin</a>
+  @if (isLoggedIn) {
+    <a routerLink="/bookings">My Bookings</a>
+    @if (role === 'superadmin') {
+      <a routerLink="/admin">Admin Panel</a>
+      <a routerLink="/admin/reports">Reports</a>
     }
-
-    <a routerLink="/login" routerLinkActive="active">Login</a>
-  </nav>
+    <button (click)="logout()">Logout</button>
+  } @else {
+    <a routerLink="/login">Login</a>
+  }
 </header>

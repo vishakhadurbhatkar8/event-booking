@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EventService,Event } from '../../../core/services/event';
+import { EventService, Event } from '../../../core/services/event';
 import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, FormsModule,RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './event-list.html',
   styleUrl: './event-list.css'
 })
@@ -35,9 +36,10 @@ export class EventList implements OnInit {
   loadEvents() {
     this.loading = true;
 
-    // Replace with backend when ready
-    this.eventService.getMockEvents().subscribe({
+    // ✅ Call backend instead of mock
+    this.eventService.getEvents().subscribe({
       next: (data) => {
+        console.log('Events loaded:', data);
         this.events = data.filter(ev =>
           ev.title.toLowerCase().includes(this.search.toLowerCase()) &&
           (this.location ? ev.location.toLowerCase() === this.location.toLowerCase() : true)
@@ -45,8 +47,15 @@ export class EventList implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error(err);
+        console.error('Failed to load events', err);
         this.loading = false;
+        // Fallback to mock data
+        this.eventService.getMockEvents().subscribe(mockData => {
+          this.events = mockData.filter(ev =>
+            ev.title.toLowerCase().includes(this.search.toLowerCase()) &&
+            (this.location ? ev.location.toLowerCase() === this.location.toLowerCase() : true)
+          );
+        });
       }
     });
   }

@@ -1,0 +1,235 @@
+.admin-bookings-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.filters-section {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filters select,
+.filters input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.filters button {
+  padding: 0.5rem 1rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.filters button:hover {
+  background: #5a6268;
+}
+
+.summary {
+  font-weight: bold;
+  color: #495057;
+}
+
+.bookings-table {
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
+  background: #e9ecef;
+  font-weight: bold;
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  align-items: center;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row:hover {
+  background: #f8f9fa;
+}
+
+.user-info {
+  font-size: 0.9rem;
+}
+
+.event-info {
+  font-size: 0.9rem;
+}
+
+.event-info small {
+  color: #6c757d;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.status-info {
+  font-size: 0.9rem;
+}
+
+.status-confirmed {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.status-reserved {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.status-cancelled {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.status-pending {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.status-approved {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.status-rejected {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.rejection-reason {
+  color: #dc3545;
+  font-style: italic;
+}
+
+.id-proof-info {
+  font-size: 0.9rem;
+}
+
+.view-proof-btn {
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.view-proof-btn:hover {
+  background: #138496;
+}
+
+.no-proof {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.actions-info {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.approve-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.approve-btn:hover {
+  background: #218838;
+}
+
+.reject-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.reject-btn:hover {
+  background: #c82333;
+}
+
+.no-actions {
+  color: #6c757d;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+.date-info {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.no-expiry {
+  color: #6c757d;
+  font-style: italic;
+}
+
+.error {
+  color: #dc3545;
+  background: #f8d7da;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 768px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .table-header div,
+  .table-row div {
+    border-bottom: 1px solid #dee2e6;
+    padding: 0.5rem 0;
+  }
+  
+  .table-header div:before,
+  .table-row div:before {
+    content: attr(data-label) ": ";
+    font-weight: bold;
+    display: inline-block;
+    width: 100px;
+  }
+}

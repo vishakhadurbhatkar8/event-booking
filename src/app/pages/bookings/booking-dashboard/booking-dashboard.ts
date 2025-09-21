@@ -1,79 +1,68 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { BookingService,Booking } from '../../../core/services/booking';
-import { EventService,Event } from '../../../core/services/event';
-
 @Component({
   selector: 'app-booking-dashboard',
-  standalone: true,
-  imports: [CommonModule],
+  imports:[FormsModule,CommonModule],
   templateUrl: './booking-dashboard.html',
-  styleUrl: './booking-dashboard.css'
+  styleUrls: ['./booking-dashboard.css']
 })
-export class BookingDashboard implements OnInit {
-  bookings: (Booking & { event?: Event, selectedFile?: File })[] = [];
-  upcoming: (Booking & { event?: Event })[] = [];
-  past: (Booking & { event?: Event })[] = [];
-  loading = false;
+export class BookingDashboardComponent implements OnInit {
+  bookings: any[] = [];
+  apiUrl = 'http://localhost:4000/bookings';
+  message: string | null = null;
 
-  constructor(
-    private bookingService: BookingService,
-    private eventService: EventService
-  ) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.loadBookings();
+    this.fetchBookings();
   }
 
-  loadBookings() {
-    this.loading = true;
-    this.bookingService.getMockBookings().subscribe({
+  fetchBookings() {
+    this.http.get<any[]>(`${this.apiUrl}/me`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    }).subscribe({
       next: (data) => {
+        console.log('Bookings fetched:', data);
         this.bookings = data;
-
-        this.eventService.getMockEvents().subscribe(evts => {
-          this.bookings.forEach(b => {
-            b.event = evts.find(e => e.id === b.eventId);
-          });
-
-          const now = new Date().toISOString();
-          this.upcoming = this.bookings.filter(b =>
-            (b.status === 'reserved' || b.status === 'confirmed') &&
-            b.event && b.event.date >= now
-          );
-          this.past = this.bookings.filter(b =>
-            b.status === 'cancelled' || (b.event && b.event.date < now)
-          );
-
-          this.loading = false;
-        });
       },
-      error: () => this.loading = false
+      error: (err) => {
+        console.error('Error fetching bookings:', err);
+        this.message = 'Failed to load bookings';
+      }
     });
   }
 
-  onFileSelected(event: any, booking: Booking & { selectedFile?: File }) {
+  cancelBooking(id: string) {
+    if (!confirm('Are you sure you want to cancel this booking?')) return;
+    
+    this.http.put(`${this.apiUrl}/${id}/cancel`, {}, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    }).subscribe({
+      next: (res: any) => {
+        this.message = res.message;
+        this.fetchBookings();
+      },
+      error: (err) => {
+        console.error('Cancel booking error:', err);
+        this.message = err.error?.message || 'Cancel failed';
+      }
+    });
+  }
+
+  uploadIdProof(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      booking.selectedFile = file;
-    }
-  }
+    if (!file) return;
 
-  uploadIdProof(booking: Booking & { selectedFile?: File }) {
-    if (!booking.selectedFile) {
-      alert('No file selected');
-      return;
-    }
-    const fd = new FormData();
-    fd.append('file', booking.selectedFile);
+    const formData = new FormData();
+    formData.append('idProof', file);
 
-    this.bookingService.uploadIdProof(booking.id, fd).subscribe({
-      next: () => alert('ID proof uploaded successfully'),
-      error: () => alert('Failed to upload ID proof')
+    this.http.post('http://localhost:4000/auth/upload-idproof', formData, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    }).subscribe({
+      next: (res: any) => this.message = res.message,
+      error: (err) => this.message = err.error?.message || 'Upload failed'
     });
-  }
-
-  cancelBooking(booking: Booking) {
-    alert(`Cancel booking ${booking.id} (TODO: call cancel API)`);
   }
 }

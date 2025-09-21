@@ -1,23 +1,51 @@
-<div class="event-details-page" *ngIf="event">
-  <h1>{{ event.title }}</h1>
-  <p>{{ event.description }}</p>
-  <p><strong>Date:</strong> {{ event.date }}</p>
-  <p><strong>Location:</strong> {{ event.location }}</p>
+<div class="event-details-page">
+  @if (event) {
+    <h1>{{ event.title }}</h1>
+    <p>{{ event.description }}</p>
+    <p><strong>Date:</strong> {{ event.date }}</p>
+    <p><strong>Location:</strong> {{ event.location }}</p>
 
-  @if (!booking) {
-    <button (click)="reserveSeat()">Reserve Seat</button>
-  } @else {
-    @if (booking.status === 'reserved' && countdown > 0) {
-      <p>Reservation expires in: {{ countdown }}s</p>
-      <button (click)="confirmBooking()">Confirm Booking</button>
-    } @else if (booking.status === 'confirmed') {
-      <p class="confirmed">✅ Booking Confirmed!</p>
+    @if (!booking) {
+      <button (click)="reserveSeat()">Reserve Seat</button>
     } @else {
-      <p class="expired">❌ Reservation expired</p>
+      @if (booking.status === 'pending') {
+        <div class="booking-status pending">
+          <p>⏳ Booking Request Submitted</p>
+          @if (countdown > 0) {
+            <p>Time remaining to upload ID proof: {{ countdown }}s</p>
+          }
+          
+          @if (!booking.idProof) {
+            <div class="id-proof-upload">
+              <h3>Upload ID Proof</h3>
+              <input type="file" (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+              <button (click)="uploadIdProof()" [disabled]="!selectedFile">Upload ID Proof</button>
+            </div>
+          } @else {
+            <p class="uploaded">✅ ID Proof uploaded - Under review</p>
+          }
+        </div>
+      } @else if (booking.status === 'approved') {
+        <div class="booking-status approved">
+          <p>✅ Booking Approved!</p>
+          <p>Your seat has been confirmed for this event.</p>
+        </div>
+      } @else if (booking.status === 'rejected') {
+        <div class="booking-status rejected">
+          <p>❌ Booking Rejected</p>
+          @if (booking.rejectionReason) {
+            <p><strong>Reason:</strong> {{ booking.rejectionReason }}</p>
+          }
+        </div>
+      } @else if (booking.status === 'cancelled') {
+        <div class="booking-status cancelled">
+          <p>🚫 Booking Cancelled</p>
+        </div>
+      } @else {
+        <p class="expired">❌ Reservation expired</p>
+      }
     }
+  } @else {
+    <p>Loading event...</p>
   }
 </div>
-
-@if (!event) {
-  <p>Loading event...</p>
-}

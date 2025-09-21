@@ -1,0 +1,40 @@
+<div class="admin-dashboard">
+  <h2>Admin Panel</h2>
+
+  <!-- Add Event Form -->
+  <div class="add-event-form">
+    <h3>Add New Event</h3>
+    <input [(ngModel)]="newEvent.title" placeholder="Title" />
+    <input [(ngModel)]="newEvent.date" type="date" />
+    <input [(ngModel)]="newEvent.location" placeholder="Location" />
+    <textarea [(ngModel)]="newEvent.description" placeholder="Description"></textarea>
+    <button (click)="addEvent()">Add Event</button>
+  </div>
+
+  <!-- Event List -->
+  <h3>Manage Events</h3>
+  @for (event of events; track event._id) {
+    <div class="event-card">
+      <h4>{{ event.title }}</h4>
+      <p>{{ event.description }}</p>
+      <p><strong>Date:</strong> {{ event.date | date }}</p>
+      <p><strong>Location:</strong> {{ event.location }}</p>
+      <p><strong>Status:</strong> 
+        @if (event.approved) {
+          <span class="badge approved">Approved</span>
+        } @else {
+          <span class="badge pending">Pending</span>
+        }
+      </p>
+
+      @if (!event.approved) {
+        <button (click)="approveEvent(event._id)">Approve</button>
+      }
+      <button (click)="deleteEvent(event._id)">Delete</button>
+    </div>
+  }
+
+  @if (message) {
+    <p class="status-message">{{ message }}</p>
+  }
+</div>

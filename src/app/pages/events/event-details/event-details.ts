@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { EventService,Event } from '../../../core/services/event';
-import { BookingService,Booking } from '../../../core/services/booking';
+import { EventService, Event } from '../../../core/services/event';
+import { BookingService, Booking } from '../../../core/services/booking';
+
 @Component({
   selector: 'app-event-details',
   standalone: true,
@@ -15,6 +16,7 @@ export class EventDetails implements OnInit, OnDestroy {
   booking: Booking | null = null;
   countdown = 0;
   timer: any;
+  selectedFile: File | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,37 +35,94 @@ export class EventDetails implements OnInit, OnDestroy {
   }
 
   loadEvent(id: string) {
+    console.log('Loading event with ID:', id);
     this.eventService.getEventById(id).subscribe({
-      next: (ev) => this.event = ev,
-      error: () => {
-        // fallback mock
+      next: (ev) => {
+        console.log('Event loaded:', ev);
+        this.event = ev;
+      },
+      error: (err) => {
+        console.error('Error loading event:', err);
+        // fallback mock (only if Mongo fails)
         this.eventService.getMockEvents().subscribe(list => {
-          this.event = list.find(e => e.id === id) || null;
+          this.event = list.find(e => e._id === id || e.id === id) || null;
         });
       }
     });
   }
 
-  reserveSeat() {
-    if (!this.event) return;
-    this.bookingService.reserveSeat(this.event.id).subscribe({
-      next: (res) => {
-        this.booking = res;
-        this.startCountdown(res.expiresAt || new Date(Date.now() + 120000).toISOString());
-      },
-      error: () => alert('Reservation failed')
-    });
+reserveSeat() {
+  if (!this.event) return;
+
+  const eventId = (this.event as any)._id;  // ✅ always use Mongo _id
+
+  this.bookingService.reserveSeat(eventId).subscribe({
+    next: (res) => {
+      console.log('Reservation response:', res);
+      this.booking = res.booking;
+      // Use the expiresAt from the backend response
+      if (res.booking.expiresAt) {
+        this.startCountdown(res.booking.expiresAt);
+      } else {
+        // Fallback: set a 2-minute countdown
+        const expiresAt = new Date(Date.now() + 120000).toISOString();
+        this.startCountdown(expiresAt);
+      }
+      alert('Booking request submitted! Please upload your ID proof to complete the reservation.');
+    },
+    error: (err) => {
+      console.error('Reservation failed', err);
+      alert(err.error?.message || 'Reservation failed');
+    }
+  });
+}
+
+onFileSelected(event: any) {
+  this.selectedFile = event.target.files[0];
+}
+
+uploadIdProof() {
+  if (!this.booking || !this.selectedFile) {
+    alert('Please select a file to upload');
+    return;
   }
+
+  const formData = new FormData();
+  formData.append('idProof', this.selectedFile);
+
+  this.bookingService.uploadIdProof(this.booking._id, formData).subscribe({
+    next: (res: any) => {
+      console.log('ID proof upload response:', res);
+      this.booking = res.booking;
+      alert('ID proof uploaded successfully! Your booking is now under review.');
+      this.selectedFile = null;
+    },
+    error: (err) => {
+      console.error('ID proof upload failed', err);
+      alert(err.error?.message || 'Failed to upload ID proof');
+    }
+  });
+}
+
 
   confirmBooking() {
     if (!this.booking) return;
-    this.bookingService.confirmBooking(this.booking.id).subscribe({
+
+    // ✅ FIX: Use _id if available
+    const bookingId = this.booking._id || (this.booking as any).id;
+    console.log('Confirming booking with ID:', bookingId);
+
+    this.bookingService.confirmBooking(bookingId).subscribe({
       next: (res) => {
-        this.booking = res;
+        console.log('Confirm booking response:', res);
+        this.booking = res.booking;
         alert('Booking confirmed!');
         this.router.navigate(['/bookings']);
       },
-      error: () => alert('Failed to confirm booking')
+      error: (err) => {
+        console.error('Confirm booking failed', err);
+        alert(err.error?.message || 'Failed to confirm booking');
+      }
     });
   }
 

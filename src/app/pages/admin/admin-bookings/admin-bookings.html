@@ -1,0 +1,107 @@
+<div class="admin-bookings-container">
+  <h2>All Bookings - Superadmin View</h2>
+  
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filters">
+      <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+        <option value="">All Statuses</option>
+        <option value="reserved">Reserved</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      
+      <input 
+        [(ngModel)]="eventFilter" 
+        (input)="applyFilters()"
+        placeholder="Filter by event name..." 
+      />
+      
+      <input 
+        type="date" 
+        [(ngModel)]="dateFilter" 
+        (change)="applyFilters()"
+      />
+      
+      <button (click)="clearFilters()">Clear Filters</button>
+    </div>
+    
+    <div class="summary">
+      <p>Total Bookings: {{ filteredBookings.length }}</p>
+    </div>
+  </div>
+
+  <!-- Bookings List -->
+  <div class="bookings-list">
+    @if (loading) {
+      <p>Loading bookings...</p>
+    } @else if (message) {
+      <p class="error">{{ message }}</p>
+    } @else if (filteredBookings.length === 0) {
+      <p>No bookings found.</p>
+    } @else {
+      <div class="bookings-table">
+        <div class="table-header">
+          <div>User</div>
+          <div>Event</div>
+          <div>Status</div>
+          <div>ID Proof</div>
+          <div>Reserved At</div>
+          <div>Actions</div>
+        </div>
+        
+        @for (booking of filteredBookings; track booking._id) {
+          <div class="table-row">
+            <div class="user-info">
+              <strong>{{ booking.user?.email || 'Unknown User' }}</strong>
+            </div>
+            
+            <div class="event-info">
+              <strong>{{ booking.event?.title || 'Unknown Event' }}</strong>
+              <br>
+              <small>{{ booking.event?.location || '' }}</small>
+              <br>
+              <small>{{ booking.event?.date | date:'short' }}</small>
+            </div>
+            
+            <div class="status-info">
+              <span [class]="getStatusClass(booking.status)">
+                {{ getStatusText(booking.status) }}
+              </span>
+              @if (booking.rejectionReason) {
+                <br><small class="rejection-reason">{{ booking.rejectionReason }}</small>
+              }
+            </div>
+            
+            <div class="id-proof-info">
+              @if (booking.idProof) {
+                <button (click)="viewIdProof(booking.idProof)" class="view-proof-btn">
+                  View ID Proof
+                </button>
+              } @else {
+                <span class="no-proof">No ID proof uploaded</span>
+              }
+            </div>
+            
+            <div class="date-info">
+              {{ booking.reservedAt | date:'short' }}
+            </div>
+            
+            <div class="actions-info">
+              @if (booking.status === 'pending') {
+                <button (click)="approveBooking(booking._id)" class="approve-btn">
+                  Approve
+                </button>
+                <button (click)="rejectBooking(booking._id)" class="reject-btn">
+                  Reject
+                </button>
+              } @else {
+                <span class="no-actions">No actions available</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

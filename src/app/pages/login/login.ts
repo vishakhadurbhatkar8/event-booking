@@ -1,53 +1,36 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { AuthService } from '../../core/services/auth';
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports:[FormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrls: ['./login.css']
 })
-export class Login {
+export class LoginComponent {
   email = '';
   otp = '';
-  otpSent = false;
-  loading = false;
+  step = 1;
+  apiUrl = 'http://localhost:4000/auth';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   requestOtp() {
-    this.loading = true;
-    this.auth.requestOtp(this.email).subscribe({
-      next: (res) => {
-        this.otpSent = true;
-        this.loading = false;
-        if (res.devOtp) {
-          alert('Dev OTP: ' + res.devOtp); // ⚠️ dev only
-        }
-      },
-      error: (err) => {
-        console.error(err);
-        this.loading = false;
-        alert('Failed to send OTP');
-      }
+    this.http.post(`${this.apiUrl}/request-otp`, { email: this.email }).subscribe({
+      next: () => this.step = 2,
+      error: (err) => console.error(err)
     });
   }
 
   verifyOtp() {
-    this.loading = true;
-    this.auth.verifyOtp(this.email, this.otp).subscribe({
-      next: () => {
-        this.loading = false;
-        this.router.navigate(['/events']);
+    this.http.post(`${this.apiUrl}/verify-otp`, { email: this.email, otp: this.otp }).subscribe({
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('role', res.role);
+        this.router.navigate(['/']);
       },
-      error: (err) => {
-        console.error(err);
-        this.loading = false;
-        alert('Invalid OTP');
-      }
+      error: (err) => console.error(err)
     });
   }
 }
